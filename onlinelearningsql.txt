@@ -1,0 +1,51 @@
+-- Create Users Table
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) NOT NULL UNIQUE,
+    Role ENUM('Student', 'Instructor', 'Admin') DEFAULT 'Student',
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Courses Table
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY AUTO_INCREMENT,
+    InstructorID INT,
+    Title VARCHAR(100) NOT NULL,
+    Description TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (InstructorID) REFERENCES Users(UserID)
+);
+
+-- Create Lessons Table
+CREATE TABLE Lessons (
+    LessonID INT PRIMARY KEY AUTO_INCREMENT,
+    CourseID INT,
+    Title VARCHAR(100) NOT NULL,
+    Content TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+);
+
+-- Create Enrollments Table
+CREATE TABLE Enrollments (
+    EnrollmentID INT PRIMARY KEY AUTO_INCREMENT,
+    CourseID INT,
+    StudentID INT,
+    EnrolledAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
+    FOREIGN KEY (StudentID) REFERENCES Users(UserID)
+);
+
+-- Create Progress Table
+CREATE TABLE Progress (
+    ProgressID INT PRIMARY KEY AUTO_INCREMENT,
+    EnrollmentID INT,
+    LessonID INT,
+    ProgressStatus ENUM('Not Started', 'In Progress', 'Completed') DEFAULT 'Not Started',
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (EnrollmentID) REFERENCES Enrollments(EnrollmentID),
+    FOREIGN KEY (LessonID) REFERENCES Lessons(LessonID)
+);
